@@ -1,46 +1,32 @@
-# Compiler
-CC = clang++
+# Your email
+EMAIL = Wasimshebalny@gmail.com
 
-# Compiler flags
-CFLAGS = -std=c++11 -Wall -Wextra
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall -Wextra
 
-# Executable names
-DEMO_EXEC = demo
+# Executables
+MAIN_EXEC = main
 TEST_EXEC = test
 
 # Source files
-DEMO_SRC = main.cpp Graph.cpp Algorithms.cpp
-TEST_SRC = Test.cpp TestCounter.cpp Graph.cpp Algorithms.cpp
+SRCS = Graph.cpp Algorithms.cpp
+OBJS = $(SRCS:.cpp=.o)
 
-# Object files
-DEMO_OBJ = $(DEMO_SRC:.cpp=.o)
-TEST_OBJ = $(TEST_SRC:.cpp=.o)
+# Main demo target
+main: main.cpp $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(MAIN_EXEC) main.cpp $(OBJS)
 
-# Targets
-all: $(DEMO_EXEC) $(TEST_EXEC)
+# Unit test target
+test: test.cpp $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TEST_EXEC) test.cpp $(OBJS)
+	./$(TEST_EXEC)
 
-$(DEMO_EXEC): $(DEMO_OBJ)
-	$(CC) $(CFLAGS) $(DEMO_OBJ) -o $(DEMO_EXEC)
+# Valgrind memory leak check
+valgrind: test.cpp $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TEST_EXEC) test.cpp $(OBJS)
+	valgrind --leak-check=full ./$(TEST_EXEC)
 
-$(TEST_EXEC): $(TEST_OBJ)
-	$(CC) $(CFLAGS) $(TEST_OBJ) -o $(TEST_EXEC)
-
-# Object file dependencies
-main.o: main.cpp Graph.h Algorithms.h
-	$(CC) $(CFLAGS) -c main.cpp -o main.o
-
-TestCounter.o: TestCounter.cpp Graph.h Algorithms.h
-	$(CC) $(CFLAGS) -c TestCounter.cpp -o TestCounter.o
-
-Test.o: Test.cpp Graph.h Algorithms.h
-	$(CC) $(CFLAGS) -c Test.cpp -o Test.o
-
-Graph.o: Graph.cpp Graph.h
-	$(CC) $(CFLAGS) -c Graph.cpp -o Graph.o
-
-Algorithms.o: Algorithms.cpp Algorithms.h Graph.h
-	$(CC) $(CFLAGS) -c Algorithms.cpp -o Algorithms.o
-
-# Clean
+# Clean up
 clean:
-	rm -f $(DEMO_OBJ) $(TEST_OBJ) $(DEMO_EXEC) $(TEST_EXEC)
+	rm -f *.o $(MAIN_EXEC) $(TEST_EXEC)

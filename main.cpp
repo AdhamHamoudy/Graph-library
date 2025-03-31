@@ -1,15 +1,12 @@
-#include <iostream>
 #include "Graph.h"
 #include "Algorithms.h"
+#include <iostream>
 
 using namespace std;
 using namespace graph;
 
 int main() {
-    // Create a graph with 6 vertices
     Graph g(6);
-
-    // Add edges (undirected)
     g.addEdge(0, 1, 4);
     g.addEdge(0, 2, 2);
     g.addEdge(1, 2, 1);
@@ -20,24 +17,33 @@ int main() {
     g.addEdge(3, 5, 6);
     g.addEdge(4, 5, 3);
 
-    // Print the graph
-    cout << "Adjacency List of Graph:" << endl;
+    cout << "Adjacency List of Graph:\n";
     g.print_graph();
 
     cout << "\n============================\n";
-    Algorithms::BFS(g, 0);
+    cout << "BFS starting from vertex 0:\n";
+    Graph bfsTree = Algorithms::BFS(g, 0);
+    bfsTree.print_graph();
 
     cout << "\n============================\n";
-    Algorithms::DFS(g, 0);
+    cout << "DFS starting from vertex 0:\n";
+    Graph dfsTree = Algorithms::DFS(g, 0);
+    dfsTree.print_graph();
 
     cout << "\n============================\n";
-    Algorithms::Dijkstra(g, 0);
+    cout << "Dijkstra from vertex 0:\n";
+    Graph dijkstraTree = Algorithms::Dijkstra(g, 0);
+    dijkstraTree.print_graph();
 
     cout << "\n============================\n";
-    Algorithms::Prim(g);
+    cout << "Prim's MST:\n";
+    Graph primMST = Algorithms::Prim(g);
+    primMST.print_graph();
 
     cout << "\n============================\n";
-    Algorithms::Kruskal(g);
+    cout << "Kruskal's MST:\n";
+    Graph kruskalMST = Algorithms::Kruskal(g);
+    kruskalMST.print_graph();
 
     return 0;
 }
