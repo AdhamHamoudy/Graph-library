@@ -38,65 +38,70 @@ public:
 // =========================
 // BFS
 // =========================
-void Algorithms::BFS(Graph& g, int startVertex) {
+Graph Algorithms::BFS(const Graph& g, int startVertex) {
     int n = g.getNumVertices();
     bool* visited = new bool[n]{};
     IntQueue q(n);
+    Graph bfsTree(n);
 
     visited[startVertex] = true;
     q.enqueue(startVertex);
 
-    cout << "BFS starting from vertex " << startVertex << ": ";
     while (!q.isEmpty()) {
         int u = q.dequeue();
-        cout << u << " ";
         Node* temp = g.getAdjList()[u];
         while (temp != nullptr) {
-            if (!visited[temp->vertex]) {
-                visited[temp->vertex] = true;
-                q.enqueue(temp->vertex);
+            int v = temp->vertex;
+            if (!visited[v]) {
+                visited[v] = true;
+                q.enqueue(v);
+                bfsTree.addEdge(u, v, temp->weight);
             }
             temp = temp->next;
         }
     }
-    cout << endl;
+
     delete[] visited;
+    return bfsTree;
 }
 
 // =========================
-// DFS (recursive)
+// DFS
 // =========================
-void dfsUtil(Graph& g, int v, bool* visited) {
+void dfsUtil(const Graph& g, Graph& dfsTree, int v, bool* visited) {
     visited[v] = true;
-    cout << v << " ";
-
     Node* temp = g.getAdjList()[v];
     while (temp != nullptr) {
         if (!visited[temp->vertex]) {
-            dfsUtil(g, temp->vertex, visited);
+            dfsTree.addEdge(v, temp->vertex, temp->weight);
+            dfsUtil(g, dfsTree, temp->vertex, visited);
         }
         temp = temp->next;
     }
 }
 
-void Algorithms::DFS(Graph& g, int startVertex) {
+Graph Algorithms::DFS(const Graph& g, int startVertex) {
     int n = g.getNumVertices();
     bool* visited = new bool[n]{};
-    cout << "DFS starting from vertex " << startVertex << ": ";
-    dfsUtil(g, startVertex, visited);
-    cout << endl;
+    Graph dfsTree(n);
+    dfsUtil(g, dfsTree, startVertex, visited);
     delete[] visited;
+    return dfsTree;
 }
 
 // =========================
 // Dijkstra
 // =========================
-void Algorithms::Dijkstra(Graph& g, int startVertex) {
+Graph Algorithms::Dijkstra(const Graph& g, int startVertex) {
     int n = g.getNumVertices();
     int* dist = new int[n];
     bool* visited = new bool[n]{};
+    int* parent = new int[n];
 
-    for (int i = 0; i < n; ++i) dist[i] = INT_MAX;
+    for (int i = 0; i < n; ++i) {
+        dist[i] = INT_MAX;
+        parent[i] = -1;
+    }
     dist[startVertex] = 0;
 
     for (int i = 0; i < n; ++i) {
@@ -108,8 +113,7 @@ void Algorithms::Dijkstra(Graph& g, int startVertex) {
                 u = j;
             }
         }
-
-        if (u == -1) break; // remaining vertices are not reachable
+        if (u == -1) break;
         visited[u] = true;
 
         Node* temp = g.getAdjList()[u];
@@ -118,27 +122,36 @@ void Algorithms::Dijkstra(Graph& g, int startVertex) {
             int w = temp->weight;
             if (!visited[v] && dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
+                parent[v] = u;
             }
             temp = temp->next;
         }
     }
 
-    cout << "Dijkstra from vertex " << startVertex << ":\n";
+    Graph tree(n);
     for (int i = 0; i < n; ++i) {
-        cout << "Distance to vertex " << i << ": ";
-        if (dist[i] == INT_MAX) cout << "INF";
-        else cout << dist[i];
-        cout << endl;
+        if (parent[i] != -1) {
+            Node* temp = g.getAdjList()[i];
+            while (temp != nullptr) {
+                if (temp->vertex == parent[i]) {
+                    tree.addEdge(parent[i], i, temp->weight);
+                    break;
+                }
+                temp = temp->next;
+            }
+        }
     }
 
     delete[] dist;
     delete[] visited;
+    delete[] parent;
+    return tree;
 }
 
 // =========================
 // Prim's Algorithm
 // =========================
-void Algorithms::Prim(Graph& g) {
+Graph Algorithms::Prim(const Graph& g) {
     int n = g.getNumVertices();
     bool* inMST = new bool[n]{};
     int* key = new int[n];
@@ -173,15 +186,24 @@ void Algorithms::Prim(Graph& g) {
         }
     }
 
-    cout << "Prim's MST:\n";
+    Graph mst(n);
     for (int i = 1; i < n; ++i) {
-        if (parent[i] != -1)
-            cout << parent[i] << " - " << i << " (weight: " << key[i] << ")\n";
+        if (parent[i] != -1) {
+            Node* temp = g.getAdjList()[i];
+            while (temp != nullptr) {
+                if (temp->vertex == parent[i]) {
+                    mst.addEdge(parent[i], i, temp->weight);
+                    break;
+                }
+                temp = temp->next;
+            }
+        }
     }
 
     delete[] inMST;
     delete[] key;
     delete[] parent;
+    return mst;
 }
 
 // =========================
@@ -191,7 +213,6 @@ struct Edge {
     int src, dest, weight;
 };
 
-// Disjoint Set Union (DSU)
 int find(int* parent, int i) {
     while (parent[i] != i) i = parent[i];
     return i;
@@ -208,18 +229,15 @@ void unite(int* parent, int* rank, int x, int y) {
     }
 }
 
-void Algorithms::Kruskal(Graph& g) {
+Graph Algorithms::Kruskal(const Graph& g) {
     int n = g.getNumVertices();
     Node** adj = g.getAdjList();
 
-    // Step 1: Collect all edges (avoid duplicates)
     int maxEdges = n * (n - 1) / 2;
     Edge* edges = new Edge[maxEdges];
     int edgeCount = 0;
     bool** added = new bool*[n];
-    for (int i = 0; i < n; ++i) {
-        added[i] = new bool[n]{};
-    }
+    for (int i = 0; i < n; ++i) added[i] = new bool[n]{};
 
     for (int u = 0; u < n; ++u) {
         Node* temp = adj[u];
@@ -233,7 +251,6 @@ void Algorithms::Kruskal(Graph& g) {
         }
     }
 
-    // Step 2: Sort edges by weight (simple selection sort)
     for (int i = 0; i < edgeCount - 1; ++i) {
         for (int j = i + 1; j < edgeCount; ++j) {
             if (edges[j].weight < edges[i].weight) {
@@ -244,12 +261,11 @@ void Algorithms::Kruskal(Graph& g) {
         }
     }
 
-    // Step 3: Apply Kruskal's MST
     int* parent = new int[n];
     int* rank = new int[n]{};
     for (int i = 0; i < n; ++i) parent[i] = i;
 
-    cout << "Kruskal's MST:\n";
+    Graph mst(n);
     int edgesUsed = 0;
     for (int i = 0; i < edgeCount && edgesUsed < n - 1; ++i) {
         int u = edges[i].src;
@@ -259,16 +275,17 @@ void Algorithms::Kruskal(Graph& g) {
         int setV = find(parent, v);
 
         if (setU != setV) {
-            cout << u << " - " << v << " (weight: " << edges[i].weight << ")\n";
+            mst.addEdge(u, v, edges[i].weight);
             unite(parent, rank, setU, setV);
             edgesUsed++;
         }
     }
 
-    // Cleanup
     for (int i = 0; i < n; ++i) delete[] added[i];
     delete[] added;
     delete[] edges;
     delete[] parent;
     delete[] rank;
+
+    return mst;
 }
