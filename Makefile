@@ -1,5 +1,4 @@
-# Your email
-EMAIL = Wasimshebalny@gmail.com
+EMAIL = adhamhamoudy3@gmail.com
 
 # Compiler and flags
 CXX = g++

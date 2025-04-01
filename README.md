@@ -35,7 +35,7 @@ Graph_TKNOT_2/
 
 ### 🔨 Compile & Run
 ```bash
-make main     # Compiles and runs main.cpp
+make main     
 ./main
 ```
 
@@ -58,7 +58,7 @@ make clean
 
 ## 📧 Author
 **Adham Hamoudy**  
-Email: `Wasimshebalny@gmail.com`
+Email: `adhamhamoudy3@gmail.com`
 
 ---
 
