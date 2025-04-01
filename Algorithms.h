@@ -20,3 +20,4 @@ public:
 } // namespace graph
 
 #endif // ALGORITHMS_H
+
