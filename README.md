@@ -1,4 +1,4 @@
-# Graph_TKNOT_2 - Adham Hamoudy
+# Graph-Lib - Adham Hamoudy
 
 ## 📌 Description
 This C++ project implements an **undirected graph using an adjacency list** with basic algorithms like:
