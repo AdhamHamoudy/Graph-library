@@ -26,12 +26,21 @@ Graph::~Graph() {
 }
 
 void Graph::addEdge(int src, int dest, int weight) {
+    if (src < 0 || src >= numVertices || dest < 0 || dest >= numVertices) {
+        throw std::out_of_range("addEdge: Invalid vertex index.");
+    }
+    if (src == dest) {
+        throw std::invalid_argument("addEdge: Self-loops are not allowed.");
+    }
+
+    // Add edge in both directions (undirected)
     Node* newNode = new Node{dest, weight, adjList[src]};
     adjList[src] = newNode;
 
     newNode = new Node{src, weight, adjList[dest]};
     adjList[dest] = newNode;
 }
+
 
 bool removeHelper(Node*& head, int vertex) {
     Node* current = head;
@@ -54,6 +63,10 @@ bool removeHelper(Node*& head, int vertex) {
 }
 
 void Graph::removeEdge(int src, int dest) {
+    if (src < 0 || src >= numVertices || dest < 0 || dest >= numVertices) {
+        throw std::out_of_range("removeEdge: Invalid vertex index.");
+    }
+    
     bool removedSrc = removeHelper(adjList[src], dest);
     bool removedDest = removeHelper(adjList[dest], src);
 

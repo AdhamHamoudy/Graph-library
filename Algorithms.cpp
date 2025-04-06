@@ -5,9 +5,7 @@
 using namespace std;
 using namespace graph;
 
-// =========================
-// Helper Queue (for BFS)
-// =========================
+// =================================== Help Queue for BFS===============================
 class IntQueue {
     int* data;
     int front, rear, size, capacity;
@@ -35,10 +33,12 @@ public:
     bool isEmpty() const { return size == 0; }
 };
 
-// =========================
-// BFS
-// =========================
+// ================================BFS===============================================
 Graph Algorithms::BFS(const Graph& g, int startVertex) {
+    if (startVertex < 0 || startVertex >= g.getNumVertices()) {
+        throw std::invalid_argument("BFS: Invalid start vertex.");
+    }
+    
     int n = g.getNumVertices();
     bool* visited = new bool[n]{};
     IntQueue q(n);
@@ -65,9 +65,8 @@ Graph Algorithms::BFS(const Graph& g, int startVertex) {
     return bfsTree;
 }
 
-// =========================
-// DFS
-// =========================
+
+// =====================================DFS===================================================
 void dfsUtil(const Graph& g, Graph& dfsTree, int v, bool* visited) {
     visited[v] = true;
     Node* temp = g.getAdjList()[v];
@@ -81,6 +80,9 @@ void dfsUtil(const Graph& g, Graph& dfsTree, int v, bool* visited) {
 }
 
 Graph Algorithms::DFS(const Graph& g, int startVertex) {
+    if (startVertex < 0 || startVertex >= g.getNumVertices()) {
+        throw std::invalid_argument("DFS: Invalid start vertex.");
+    }    
     int n = g.getNumVertices();
     bool* visited = new bool[n]{};
     Graph dfsTree(n);
@@ -88,11 +90,12 @@ Graph Algorithms::DFS(const Graph& g, int startVertex) {
     delete[] visited;
     return dfsTree;
 }
-
-// =========================
-// Dijkstra
-// =========================
+ 
+// ==============================Dijkstra=============================================
 Graph Algorithms::Dijkstra(const Graph& g, int startVertex) {
+    if (startVertex < 0 || startVertex >= g.getNumVertices()) {
+        throw std::invalid_argument("Dijkstra: Invalid start vertex.");
+    }    
     int n = g.getNumVertices();
     int* dist = new int[n];
     bool* visited = new bool[n]{};
@@ -148,9 +151,8 @@ Graph Algorithms::Dijkstra(const Graph& g, int startVertex) {
     return tree;
 }
 
-// =========================
-// Prim's Algorithm
-// =========================
+
+// ======================================Prim==========================================
 Graph Algorithms::Prim(const Graph& g) {
     int n = g.getNumVertices();
     bool* inMST = new bool[n]{};
@@ -205,10 +207,8 @@ Graph Algorithms::Prim(const Graph& g) {
     delete[] parent;
     return mst;
 }
-
-// =========================
-// Kruskal's Algorithm
-// =========================
+ 
+// ===================================Kruskal===========================================
 struct Edge {
     int src, dest, weight;
 };
