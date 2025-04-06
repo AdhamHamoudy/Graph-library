@@ -4,7 +4,6 @@ EMAIL = adhamhamoudy3@gmail.com
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra
 
-# Executables
 MAIN_EXEC = main
 TEST_EXEC = test
 
@@ -26,7 +25,6 @@ valgrind: test.cpp $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TEST_EXEC) test.cpp $(OBJS)
 	valgrind --leak-check=full ./$(TEST_EXEC)
 
-# Clean up
 clean:
 	rm -f *.o $(MAIN_EXEC) $(TEST_EXEC)
 	
